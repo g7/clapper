@@ -1,4 +1,4 @@
-const { GObject, Gtk } = imports.gi;
+const { GObject, Gtk, Adw, GLib } = imports.gi;
 const Misc = imports.src.misc;
 
 var CustomButton = GObject.registerClass({
@@ -134,6 +134,86 @@ class ClapperPopoverButtonBase extends Gtk.MenuButton
 
         clapperWidget.isPopoverOpen = false;
     }
+});
+
+var ModelEnumToggleGroup = GObject.registerClass({
+    GTypeName: 'ClapperModelEnumToggleGroup',
+    Properties: {
+        'model': GObject.ParamSpec.object(
+            'model',
+            'Model',
+            'The model to use',
+            GObject.ParamFlags.READWRITE,
+            Adw.EnumListModel
+        ),
+        'selected': GObject.ParamSpec.int(
+            'selected',
+            'Selected',
+            'The selected item',
+            GObject.ParamFlags.READWRITE,
+            0, GLib.MAXINT32, 0
+        ),
+    }
+},
+class ClapperModelToggleGroup extends Gtk.Box
+{
+    _init(opts)
+    {
+        super._init({orientation: Gtk.Orientation.HORIZONTAL});
+
+        this._model = null;
+        this._selected = 0;
+        this._buttons = [];
+        if (opts.model)
+            this.model = opts.model;
+    }
+
+    _on_toggled(button)
+    {
+        if (button.active) {
+          this._selected = button.data;
+          this.notify("selected");
+        }
+    }
+
+    set model(value)
+    {
+        this._model = value;
+
+        let button = null;
+        for (let i=0; i < this._model.get_n_items(); i++) {
+          let item = this._model.get_item(i);
+          button = new Gtk.ToggleButton({label: item.get_name(), group: button});
+          button.data = item.get_value();
+          let value = item.get_value();
+          button.connect("toggled", this._on_toggled.bind(this));
+          this.append(button);
+        }
+    }
+
+    get model()
+    {
+        return this._model;
+    }
+
+    set selected(value)
+    {
+      let child = this.get_first_child();
+      while (child != null) {
+        if (child.data == value) {
+          child.active = true;
+          break;
+        }
+
+        child = child.get_next_sibling();
+      }
+    }
+
+    get selected()
+    {
+        return this._selected;
+    }
+
 });
 
 var ElapsedTimeButton = GObject.registerClass({

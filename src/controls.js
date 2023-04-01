@@ -378,6 +378,11 @@ class ClapperControls extends Gtk.Box
         clapperWidget.player.bind_property('mute', this.volumeButton, 'muted',
             GObject.BindingFlags.DEFAULT
         );
+
+        this.elapsedButton.configure();
+        clapperWidget.player.clappersink.bind_property("rotate-method",
+            this.elapsedButton.toggleGroup, "selected",
+            GObject.BindingFlags.BIDIRECTIONAL | GObject.BindingFlags.SYNC_CREATE);
     }
 
     _onPlayerResize(width, height)

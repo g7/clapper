@@ -46,6 +46,17 @@
             </style>
           </object>
         </child>
+
+        <child>
+          <object class="ClapperPopoverSeparator">
+            <property name="label" translatable="yes">Rotation</property>
+          </object>
+        </child>
+        <child>
+          <object class="ClapperModelEnumToggleGroup" id="toggleGroup">
+          </object>
+        </child>
+
       </object>
     </child>
   </object>

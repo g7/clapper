@@ -1,4 +1,4 @@
-const { GObject, Gtk, Adw, GLib } = imports.gi;
+const { GObject, Gtk, Adw, GLib, Gst } = imports.gi;
 const Misc = imports.src.misc;
 
 var CustomButton = GObject.registerClass({
@@ -219,7 +219,7 @@ class ClapperModelToggleGroup extends Gtk.Box
 var ElapsedTimeButton = GObject.registerClass({
     GTypeName: 'ClapperElapsedTimeButton',
     Template: Misc.getResourceUri('ui/elapsed-time-button.ui'),
-    Children: ['scrolledWindow', 'speedScale'],
+    Children: ['scrolledWindow', 'speedScale', 'toggleGroup'],
 },
 class ClapperElapsedTimeButton extends PopoverButtonBase
 {
@@ -252,6 +252,12 @@ class ClapperElapsedTimeButton extends PopoverButtonBase
     {
         this.scrolledWindow.max_content_height = (isFullscreen && !isMobileMonitor)
             ? 190 : 150;
+    }
+
+    configure()
+    {
+        let enum_list = new Adw.EnumListModel({enum_type: GObject.type_from_name ("GstVideoOrientationMethod")});
+        this.toggleGroup.model = enum_list;
     }
 });
 
